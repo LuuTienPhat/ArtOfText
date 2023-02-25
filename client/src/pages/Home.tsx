@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 
 import { Loader, Card, FormField } from "../components";
@@ -13,7 +14,64 @@ const RenderCards = ({ data, title }: any) => {
 const Home = () => {
   const [loading, setLoading]: Array<any> = useState(false);
   const [allPosts, setAllPosts]: Array<any> = useState(null);
-  const [searchText, setSearchText]: Array<any> = useState("");
+  const [searchText, setSearchText]: [searchText: string, setSearchText: any] =
+    useState("");
+  const [searchResults, setSearchResults]: [
+    searchResults: any,
+    setSearchResults: any,
+  ] = useState(null);
+
+  const [searchTimeout, setSearchTimeout]: [
+    searchTimeout: number | null,
+    setSearchTimeout: any,
+  ] = useState(null);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+
+      try {
+        const response: any = await axios.get(
+          "http://localhost:8080/api/v1/post",
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          setAllPosts(result.data.reverse());
+        } else {
+        }
+      } catch (error) {
+        alert(error);
+      } finally {
+        setLoading(true);
+      }
+
+      fetchPosts();
+    };
+  }, []);
+
+  const handleSearchChange: any = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+
+    setSearchTimeout(
+      setTimeout(() => {
+        const searchResult: any = allPosts.filter((item: any) => {
+          return (
+            item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+            item.prompt.toLowerCase().includes(searchText.toLowerCase())
+          );    
+        });
+
+        setSearchResults(searchResult);
+      }, 500)
+    );
+    
+  };
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -28,7 +86,13 @@ const Home = () => {
       </div>
 
       <div className="mt-10">
-        <FormField />
+        <FormField LabelName="Search posts"
+        type="text"
+        name="text"
+        placeholder="Search posts"
+        value={searchResults}
+        handleChange={handleSearchChange}
+        />
       </div>
 
       <div className="mt-10">
@@ -47,9 +111,9 @@ const Home = () => {
 
             <div className="grid lg:grid-cols-4 sm;grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3">
               {searchText ? (
-                <RenderCards data={[]} title="No search results found" />
+                <RenderCards data={searchResults} title="No search results found" />
               ) : (
-                <RenderCards data={[]} title="No posts found" />
+                <RenderCards data={allPosts} title="No posts found" />
               )}
             </div>
           </>
