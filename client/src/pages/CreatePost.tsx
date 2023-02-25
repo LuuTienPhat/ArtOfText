@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 // import {preview} from '../assets';
 import { getRandomPrompt } from "../utils";
 import { FormField, Loader } from "../components";
+import axios from "axios";
 
 const CreatePost = () => {
   const navigate = useNavigate();
@@ -16,19 +17,81 @@ const CreatePost = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit: any = () => {};
+  const handleSubmit: any = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+    if (form.prompt && form.photo) {
+      setLoading(true);
+
+      try {
+        const response: any = await axios.post(
+          "http://localhost:8080/api/v1/post",
+          {
+            name : form.name,
+            prompt : form.prompt,
+            photo: form.photo
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        await response.json();
+        navigate("/")
+
+      } catch (error) {
+        console.error("handleSubmit()-0:", error);
+        alert(error);
+      }
+      finally{
+        setLoading(false);
+      }
+    }
+    else {
+      alert('Please enter a prompt and generate an image')
+    }
+  };
 
   const handleChange: any = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target?.name]: e.target?.value });
   };
 
   const handleSurpriseMe: any = () => {
-    const randomPrompt : string = getRandomPrompt(form.prompt);
-    setForm({...form, prompt: randomPrompt})
+    const randomPrompt: string = getRandomPrompt(form.prompt);
+    setForm({ ...form, prompt: randomPrompt });
   };
 
-  const generateImage: any = () => {
-    
+  const generateImage: any = async () => {
+    if (form.prompt) {
+      try {
+        setGeneratingImg(true);
+
+        const response: any = await axios.post(
+          "http://localhost:8080/api/v1/dalle",
+          {
+            prompt: form.prompt,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        const data: any = await response.json();
+
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+      } catch (error) {
+        console.error("generateImage()-0: ", error);
+        alert(error);
+      } finally {
+        setGeneratingImg(false);
+      }
+    } else {
+      alert("Please enter a prompt");
+    }
   };
 
   return (

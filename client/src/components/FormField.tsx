@@ -1,5 +1,5 @@
 import React from "react";
-import { IFormField } from "../constants/interface";
+import { IFormFieldProps } from "../constants/interface";
 
 const FormField = ({
   LabelName,
@@ -10,7 +10,7 @@ const FormField = ({
   handleChange,
   isSurpriseMe,
   handleSurpriseMe,
-}: IFormField) => {
+}: IFormFieldProps) => {
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
