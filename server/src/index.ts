@@ -18,15 +18,17 @@ app.get("/", async (req, res) => {
   res.send("hello from DALL E");
 });
 
+const port = process.env.PORT || 8000;
+
 const startServer = async () => {
   try {
     const mongodbUrl: string | undefined = process.env.MONGODB_URL;
     if (mongodbUrl) {
       connectDB(mongodbUrl);
-      app.listen(process.env.PORT || 8080, () => console.log("Server has started on port"));
+      app.listen(port , () => console.log(`Server has started on port ${port}`));
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   
