@@ -15,10 +15,10 @@ app.use('/api/v1/post', postRoutes);
 app.use('api/v1/dalle', dalleRoutes);
 
 app.get("/", async (req, res) => {
-  res.send("hello from DALL E");
+  res.send("Hello from DALL E");
 });
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8080;
 
 const startServer = async () => {
   try {
