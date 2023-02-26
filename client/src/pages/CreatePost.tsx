@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// import {preview} from '../assets';
+import { preview } from "../assets";
 import { getRandomPrompt } from "../utils";
 import { FormField, Loader } from "../components";
 import axios from "axios";
@@ -27,9 +27,9 @@ const CreatePost = () => {
         const response: any = await axios.post(
           "http://localhost:8080/api/v1/post",
           {
-            name : form.name,
-            prompt : form.prompt,
-            photo: form.photo
+            name: form.name,
+            prompt: form.prompt,
+            photo: form.photo,
           },
           {
             headers: {
@@ -39,18 +39,15 @@ const CreatePost = () => {
         );
 
         await response.json();
-        navigate("/")
-
+        navigate("/");
       } catch (error) {
         console.error("handleSubmit()-0:", error);
         alert(error);
-      }
-      finally{
+      } finally {
         setLoading(false);
       }
-    }
-    else {
-      alert('Please enter a prompt and generate an image')
+    } else {
+      alert("Please enter a prompt and generate an image");
     }
   };
 
@@ -134,16 +131,16 @@ const CreatePost = () => {
               />
             ) : (
               <img
-                src={form.photo}
-                alt={form.prompt}
-                className="w-full h-full object-contain"
+                src={preview}
+                alt="preview"
+                className="w-9/12 h-9/12 object-contain opacity-40"
               />
             )}
 
             {generatingImg && (
-              <div className="absulute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
-                <Loader />
-              </div>
+              <div className="absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
+              <Loader />
+            </div>
             )}
           </div>
         </div>
